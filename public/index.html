@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <title>CloudNinja Services</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-blue-50 text-gray-900">
+  <!-- Header -->
+  <header class="bg-blue-100 shadow-lg border-b border-blue-200">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div
+            class="w-8 h-8 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
+            <span class="text-sm font-bold text-white">C</span>
+          </div>
+          <h1 class="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            CloudNinja Corp
+          </h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span class="text-sm text-blue-800">Services Cloud Premium</span>
+          <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="bg-blue-200 border-b border-blue-300">
+    <div class="container mx-auto px-6">
+      <ul class="flex space-x-8 py-4">
+        <li><a href="#"
+            class="text-blue-900 hover:text-emerald-600 transition-colors duration-300 font-medium">Accueil</a></li>
+        <li><a href="#"
+            class="text-blue-800 hover:text-emerald-600 transition-colors duration-300 font-medium">Services</a></li>
+        <li><a href="#" class="text-blue-800 hover:text-emerald-600 transition-colors duration-300 font-medium">À
+            propos</a></li>
+        <li><a href="#"
+            class="text-blue-800 hover:text-emerald-600 transition-colors duration-300 font-medium">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-6 py-12 flex-grow">
+    <div class="text-center mb-12">
+      <h2 class="text-5xl font-bold mb-6 bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+        Bienvenue chez CloudNinja Corp
+      </h2>
+      <p class="text-xl text-blue-800 mb-8 max-w-2xl mx-auto">
+        Découvrez nos services cloud innovants et transformez votre infrastructure numérique
+      </p>
+
+      <button onclick="getServices()"
+        class="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-4 px-8 rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+        Afficher les services
+      </button>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+      <ul id="services" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></ul>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white mt-16">
+    <div class="container mx-auto px-6 py-8">
+      <div class="grid md:grid-cols-3 gap-8">
+        <div>
+          <h3
+            class="text-xl font-bold mb-4 bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+            CloudNinja Corp
+          </h3>
+          <p class="text-gray-400 text-sm">
+            Votre partenaire de confiance pour les solutions cloud d'entreprise.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold mb-4 text-white">Liens rapides</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Documentation</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Support</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">API</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold mb-4 text-white">Contact</h4>
+          <p class="text-gray-400 text-sm">
+            Email: contact@cloudninja.com<br>
+            Tél: +33 1 23 45 67 89
+          </p>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 mt-8 pt-6 text-center">
+        <p class="text-gray-400 text-sm">
+          © 2025 CloudNinja Corp. Tous droits réservés.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    async function getServices() {
+      try {
+        // Simulation de données pour la démonstration
+        const mockData = [
+          { name: "Infrastructure Cloud" },
+          { name: "Sécurité Avancée" },
+          { name: "Monitoring 24/7" },
+          { name: "Backup Automatique" },
+          { name: "Load Balancing" },
+          { name: "DevOps Support" }
+        ];
+
+        // Remplacer par votre vraie API
+        // const res = await fetch('/api/services');
+        // const data = await res.json();
+
+        const data = mockData;
+
+        document.getElementById('services').innerHTML = data.map(s => `
+          <li class="bg-blue-100 rounded-xl p-6 border border-blue-300 hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <div class="w-3 h-3 bg-gradient-to-r from-orange-400 to-red-400 rounded-full"></div>
+              <span class="text-blue-900 font-medium">${s.name}</span>
+            </div>
+          </li>
+        `).join('');
+      } catch (error) {
+        console.error('Erreur lors du chargement des services:', error);
+        document.getElementById('services').innerHTML = `
+          <li class="bg-red-500 bg-opacity-20 rounded-xl p-6 border border-red-500 border-opacity-30 text-red-200">
+            Erreur lors du chargement des services
+          </li>
+        `;
+      }
+    }
+
+    const refreshLogsBtn = document.getElementById('refreshLogsBtn');
+    const logsContainer = document.getElementById('logsContainer');
+
+    refreshLogsBtn.addEventListener('click', () => {
+      fetch('/api/logs')
+        .then(res => res.json())
+        .then(data => {
+          if (data.logs) {
+            logsContainer.textContent = data.logs.join('\n');
+          } else {
+            logsContainer.textContent = 'Aucun log trouvé.';
+          }
+        })
+        .catch(() => {
+          logsContainer.textContent = 'Erreur lors du chargement des logs.';
+        });
+    });
+
+  </script>
+
+  <hr />
+  <h2>Logs Serveur</h2>
+  <button id="refreshLogsBtn">🔄 Rafraîchir les logs</button>
+  <pre id="logsContainer"
+    style="text-align:left; background:#eee; padding:10px; max-height:300px; overflow-y:auto;"></pre>
+
+</body>
+
+</html>
