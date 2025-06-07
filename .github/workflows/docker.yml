@@ -24,9 +24,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lowercase repo owner
+        run: echo "REPO_OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/cloudninja_agl:latest .
+          docker build -t ghcr.io/${REPO_OWNER_LC}/cloudninja_agl:latest .
 
       - name: Install Trivy
         run: |
@@ -36,8 +39,8 @@ jobs:
 
       - name: Scan image with Trivy
         run: |
-          trivy image --severity HIGH,CRITICAL --exit-code 1 --no-progress ghcr.io/${{ github.repository_owner }}/cloudninja_agl:latest
+          trivy image --severity HIGH,CRITICAL --exit-code 1 --no-progress ghcr.io/${REPO_OWNER_LC}/cloudninja_agl:latest
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/cloudninja_agl:latest
+          docker push ghcr.io/${REPO_OWNER_LC}/cloudninja_agl:latest
