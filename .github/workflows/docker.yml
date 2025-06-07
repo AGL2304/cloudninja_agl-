@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-scan:
-    runs-on: ubuntu-22.04  # Forcer une version compatible Trivy
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
@@ -33,9 +33,11 @@ jobs:
 
       - name: Install Trivy
         run: |
-          wget -qO- https://aquasecurity.github.io/trivy-repo/deb/setup.sh | sudo bash
-          sudo apt-get update
-          sudo apt-get install -y trivy
+          TRIVY_VERSION="0.63.1"
+          wget https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz
+          tar zxvf trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz
+          sudo mv trivy /usr/local/bin/
+          trivy --version
 
       - name: Scan image with Trivy
         run: |
