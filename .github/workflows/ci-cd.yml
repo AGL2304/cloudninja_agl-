@@ -81,7 +81,8 @@ jobs:
 
   deploy:
     needs: docker-build-push
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
       url: ${{ github.ref == 'refs/heads/main' && 'https://prod.example.com' || 'https://staging.example.com' }}
@@ -98,6 +99,9 @@ jobs:
           echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig
           chmod 600 kubeconfig
           export KUBECONFIG=$PWD/kubeconfig
+
+      - name: Debug kubectl contexts
+        run: kubectl config get-contexts
 
       - name: Debug current branch
         run: echo "Deploying from branch $GITHUB_REF"
