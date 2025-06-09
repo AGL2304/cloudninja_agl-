@@ -1,0 +1,104 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+      - staging
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/cloudninja_agl
+  KUBE_CONTEXT_STAGING: staging-context
+  KUBE_CONTEXT_PROD: production-context
+  NAMESPACE_STAGING: staging
+  NAMESPACE_PROD: production
+
+jobs:
+
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+  docker-build-push:
+    needs: lint-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set lowercase repo owner
+        run: echo "REPO_OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Scan image for vulnerabilities with Trivy
+        uses: aquasecurity/trivy-action@0.11.2
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: table
+          severity: CRITICAL,HIGH
+
+  deploy:
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      url: ${{ github.ref == 'refs/heads/main' && 'https://prod.example.com' || 'https://staging.example.com' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+
+      - name: Deploy to Kubernetes
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            kubectl --context ${{ env.KUBE_CONTEXT_PROD }} -n ${{ env.NAMESPACE_PROD }} set image deployment/cloudninja-deployment cloudninja=${{ env.IMAGE_NAME }}:${{ github.sha }}
+            kubectl --context ${{ env.KUBE_CONTEXT_PROD }} -n ${{ env.NAMESPACE_PROD }} rollout status deployment/cloudninja-deployment
+          else
+            kubectl --context ${{ env.KUBE_CONTEXT_STAGING }} -n ${{ env.NAMESPACE_STAGING }} set image deployment/cloudninja-deployment cloudninja=${{ env.IMAGE_NAME }}:${{ github.sha }}
+            kubectl --context ${{ env.KUBE_CONTEXT_STAGING }} -n ${{ env.NAMESPACE_STAGING }} rollout status deployment/cloudninja-deployment
+          fi
