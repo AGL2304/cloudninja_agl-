@@ -15,6 +15,7 @@ env:
   KUBE_CONTEXT_PROD: docker-desktop
   NAMESPACE_STAGING: staging
   NAMESPACE_PROD: production
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/cloudninja_agl
 
 jobs:
 
@@ -53,9 +54,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set lowercase image name
-        run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cloudninja_agl" >> $GITHUB_ENV
-
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -81,7 +79,7 @@ jobs:
 
   deploy:
     needs: docker-build-push
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
       url: ${{ github.ref == 'refs/heads/main' && 'https://prod.example.com' || 'https://staging.example.com' }}
