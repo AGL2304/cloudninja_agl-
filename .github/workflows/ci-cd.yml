@@ -11,8 +11,8 @@ on:
       - staging
 
 env:
-  KUBE_CONTEXT_STAGING: staging-context
-  KUBE_CONTEXT_PROD: production-context
+  KUBE_CONTEXT_STAGING: minikube
+  KUBE_CONTEXT_PROD: docker-desktop
   NAMESPACE_STAGING: staging
   NAMESPACE_PROD: production
 
@@ -96,14 +96,21 @@ jobs:
       - name: Configure kubeconfig
         run: |
           echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig
+          chmod 600 kubeconfig
           export KUBECONFIG=$PWD/kubeconfig
+
+      - name: Debug current branch
+        run: echo "Deploying from branch $GITHUB_REF"
 
       - name: Deploy to Kubernetes
         run: |
+          export KUBECONFIG=$PWD/kubeconfig
           if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-            kubectl --context ${{ env.KUBE_CONTEXT_PROD }} -n ${{ env.NAMESPACE_PROD }} set image deployment/cloudninja-deployment cloudninja=${{ env.IMAGE_NAME }}:${{ github.sha }}
-            kubectl --context ${{ env.KUBE_CONTEXT_PROD }} -n ${{ env.NAMESPACE_PROD }} rollout status deployment/cloudninja-deployment
+            echo "Deploying to PRODUCTION on context ${{ env.KUBE_CONTEXT_PROD }}"
+            kubectl --context=${{ env.KUBE_CONTEXT_PROD }} -n ${{ env.NAMESPACE_PROD }} set image deployment/cloudninja-deployment cloudninja=${{ env.IMAGE_NAME }}:${{ github.sha }}
+            kubectl --context=${{ env.KUBE_CONTEXT_PROD }} -n ${{ env.NAMESPACE_PROD }} rollout status deployment/cloudninja-deployment
           else
-            kubectl --context ${{ env.KUBE_CONTEXT_STAGING }} -n ${{ env.NAMESPACE_STAGING }} set image deployment/cloudninja-deployment cloudninja=${{ env.IMAGE_NAME }}:${{ github.sha }}
-            kubectl --context ${{ env.KUBE_CONTEXT_STAGING }} -n ${{ env.NAMESPACE_STAGING }} rollout status deployment/cloudninja-deployment
+            echo "Deploying to STAGING on context ${{ env.KUBE_CONTEXT_STAGING }}"
+            kubectl --context=${{ env.KUBE_CONTEXT_STAGING }} -n ${{ env.NAMESPACE_STAGING }} set image deployment/cloudninja-deployment cloudninja=${{ env.IMAGE_NAME }}:${{ github.sha }}
+            kubectl --context=${{ env.KUBE_CONTEXT_STAGING }} -n ${{ env.NAMESPACE_STAGING }} rollout status deployment/cloudninja-deployment
           fi
