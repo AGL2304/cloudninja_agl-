@@ -1,0 +1,11 @@
+﻿{
+  "agentId": 21,
+  "agentName": "DESKTOP-NKTLHPO",
+  "poolId": 1,
+  "poolName": "Default",
+  "serverUrl": "https://pipelinesghubeus6.actions.githubusercontent.com/4pe3Rn0lBvlLL4Vd8J5MWeHoRxs1jG23qB1MPWgDOALF4Vr6IP/",
+  "gitHubUrl": "https://github.com/AGL2304/cloudninja_agl-",
+  "workFolder": "_work",
+  "useV2Flow": true,
+  "serverUrlV2": "https://broker.actions.githubusercontent.com/"
+}
