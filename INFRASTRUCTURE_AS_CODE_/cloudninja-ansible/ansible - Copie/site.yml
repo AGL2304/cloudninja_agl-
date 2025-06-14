@@ -1,0 +1,9 @@
+---
+- name: Déploiement CloudNinja
+  hosts: all
+  become: yes
+
+  roles:
+    - { role: frontend, when: "'frontend' in group_names" }
+    - { role: backend, when: "'backend' in group_names" }
+    - { role: database, when: "'database' in group_names" }

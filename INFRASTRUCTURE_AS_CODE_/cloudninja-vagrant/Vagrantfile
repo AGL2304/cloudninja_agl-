@@ -1,0 +1,42 @@
+VAGRANT_API_VERSION = "2"
+
+Vagrant.configure(VAGRANT_API_VERSION) do |config|
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.boot_timeout = 600  # 10 minutes d'attente au démarrage
+
+  # FRONTEND VM (Nginx)
+  config.vm.define "frontend" do |frontend|
+    frontend.vm.hostname = "frontend"
+    frontend.vm.network "private_network", ip: "192.168.56.10"
+    frontend.vm.network "forwarded_port", guest: 22, host: 2223, auto_correct: true
+    frontend.vm.provision "shell", path: "frontend/provision.sh"
+    frontend.vm.provider "virtualbox" do |vb|
+      vb.memory = 512
+      vb.cpus = 1
+    end
+  end
+
+  # BACKEND VM (Node.js)
+  config.vm.define "backend" do |backend|
+    backend.vm.hostname = "backend"
+    backend.vm.network "private_network", ip: "192.168.56.20"
+    backend.vm.network "forwarded_port", guest: 22, host: 2224, auto_correct: true
+    backend.vm.provision "shell", path: "backend/provision.sh"
+    backend.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+      vb.cpus = 1
+    end
+  end
+
+  # DATABASE VM (MySQL)
+  config.vm.define "database" do |db|
+    db.vm.hostname = "database"
+    db.vm.network "private_network", ip: "192.168.56.30"
+    db.vm.network "forwarded_port", guest: 22, host: 2225, auto_correct: true
+    db.vm.provision "shell", path: "database/provision.sh"
+    db.vm.provider "virtualbox" do |vb|
+      vb.memory = 512
+      vb.cpus = 1
+    end
+  end
+end

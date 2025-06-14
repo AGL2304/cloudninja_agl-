@@ -1,0 +1,11 @@
+---
+- name: Installer nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Copier page HTML
+  copy:
+    content: "<h1>Bienvenue sur le frontend CloudNinja</h1>"
+    dest: /var/www/html/index.html

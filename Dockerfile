@@ -34,4 +34,4 @@ USER appuser
 EXPOSE 3000
 
 # Démarrer l'application
-CMD ["node", "src/app.js"]
+CMD ["node", "src/server.js"]

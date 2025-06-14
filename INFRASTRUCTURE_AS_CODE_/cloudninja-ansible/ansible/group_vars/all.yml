@@ -1,0 +1,5 @@
+nodejs_version: "16.x"
+mysql_root_password: "rootpass"
+mysql_user: "ninja"
+mysql_password: "ninjapass"
+mysql_database: "cloudninja"

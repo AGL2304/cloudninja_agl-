@@ -1,0 +1,45 @@
+- name: Installer rsync
+  apt:
+    name: rsync
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Installer Node.js
+  shell: curl -fsSL https://deb.nodesource.com/setup_{{ nodejs_version }} | sudo -E bash -
+  args:
+    executable: /bin/bash
+  become: yes
+
+- name: Installer nodejs
+  apt:
+    name: nodejs
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Installer PM2 globalement
+  npm:
+    name: pm2
+    global: yes
+    state: present
+  become: yes
+
+- name: Copier les fichiers de l'app
+  synchronize:
+    src: "{{ role_path }}/files/app/"
+    dest: /home/vagrant/app
+    recursive: yes
+    delete: yes
+  delegate_to: localhost
+
+- name: Installer les dépendances
+  npm:
+    path: /home/vagrant/app
+  become: yes
+
+- name: Démarrer le backend avec PM2
+  shell: pm2 start /home/vagrant/app/index.js --name cloudninja
+  args:
+    executable: /bin/bash
+  become: yes
