@@ -9,7 +9,7 @@ import statusRoute from './routes/status.js';
 import auth from './middleware/auth.js';
 import protectedRoute from './routes/protected.js';
 
-const __filename = fileURLToPath(import.meta.url);
+
 const __dirname = path.dirname(__filename);
 
 const app = express();

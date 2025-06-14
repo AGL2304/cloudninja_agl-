@@ -1,5 +1,5 @@
-const request = require('supertest');
-const app = require('../src/app'); // juste l'app express
+import request from 'supertest';
+import app from '../src/app.js'; // Remarquez le .js obligatoire avec ESModules
 
 describe('API Routes', () => {
   test('GET /api/status retourne 200', async () => {
